@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <!-- The View Model binding to connect the fragment and view model classes !-->
+        <variable
+            name="viewModel"
+            type="com.example.android.hue.init.InitViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimary">
+
+        <!-- The prompt text for the initial hue bridge connection !-->
+        <TextView
+            android:layout_width="424dp"
+            android:layout_height="23dp"
+            android:text="@string/initialLinkText"
+            android:textAlignment="center"
+            android:textColor="#96FFFFFF"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
