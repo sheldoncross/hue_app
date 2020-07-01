@@ -7,10 +7,7 @@ import kotlinx.coroutines.Deferred
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Path
+import retrofit2.http.*
 
 //Url for the api
 private const val BASE_URL = "https://99.232.24.188/"
@@ -36,6 +33,12 @@ private val retrofit = Retrofit.Builder()
 
 //Interface containing the methods for data retrieval that the API object will inherit
 interface HueApiService {
+    //TODO - Creating a api call to turn on and off any light after switch is created for each card
+    //PUT call to insert the value of the "on" attribute into any light
+    @PUT("api/{username}/lights/{light}/state")
+    fun putOnAttribute(@Path("username") username: String, @Path("light") light: Int) :
+            Deferred<Pair<String, Boolean>>
+
     //GET call to obtain the light map
     @GET("api/{username}/lights")
     fun getAllLightsAsync(@Path("username") username : String) :
