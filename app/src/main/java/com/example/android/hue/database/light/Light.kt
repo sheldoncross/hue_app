@@ -9,6 +9,9 @@ data class Light(
     @PrimaryKey
     var name: String = "none",
 
+    @ColumnInfo
+    var idNumber : Int = -1,
+
     @ColumnInfo(name = "on")
     var on: Boolean = false,
 

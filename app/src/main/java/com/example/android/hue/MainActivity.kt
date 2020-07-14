@@ -17,6 +17,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 
 class MainActivity : AppCompatActivity() {
+
+    /*
+    * Launch main god activity containing navigation graph which launches init activity first
+    * containing the initialization code to obtain the default values needed and to pull them from
+    * device database
+    * */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)

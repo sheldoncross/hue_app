@@ -38,14 +38,20 @@ class InitFragment : Fragment(){
             container,
             false)
 
+        /*Shared view model containing shared values for and from the database that'll be shared
+        *between fragments and activities
+         */
         val sharedViewModel : SharedViewModel by activityViewModels()
 
         val application = requireNotNull(this.activity).application
 
+        //Instance of the user database
         val userDataSource = UserDatabase.getInstance(application).userDatabaseDao
 
+        //Instance of light database
         val lightDataSource = LightDatabase.getInstance(application).lightDatabaseDao
 
+        //View model which adds the user & light databases to the init view model
         val viewModelFactory = InitViewModelFactory(userDataSource, lightDataSource, application)
 
         //Instantiate the view model for the fragment
@@ -58,10 +64,15 @@ class InitFragment : Fragment(){
         // Allows Data Binding to Observe LiveData with the lifecycle of this Fragment
         binding.lifecycleOwner = this
 
+        /*Observe the init models navigate to home variable to know when to navigate away from the
+        * init fragment to the home fragment and to update shared view model values
+        */
         initViewModel.navigateToHome.observe(viewLifecycleOwner, Observer {
             it?.let{
+                //Navigate away from the init fragment towards the home fragment
                 this.findNavController()
                     .navigate(InitFragmentDirections.actionInitFragmentToHomeFragment())
+                //Update the shared view model values
                 sharedViewModel.user.value = initViewModel.user.value
                 sharedViewModel.lightList.value = initViewModel.lightList.value
             }

@@ -4,13 +4,15 @@ import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterF
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.Deferred
+import retrofit2.Call
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.http.*
 
 //Url for the api
-private const val BASE_URL = "https://99.232.24.188/"
+private const val BASE_URL = "https:/192.168.4.48/"
 
 //Certificate handler for unsafe connections
 private val unsafeOkHttpClient = UnsafeOkHttpClient.unsafeOkHttpClient
@@ -33,24 +35,34 @@ private val retrofit = Retrofit.Builder()
 
 //Interface containing the methods for data retrieval that the API object will inherit
 interface HueApiService {
-    //TODO - Creating a api call to turn on and off any light after switch is created for each card
-    //PUT call to insert the value of the "on" attribute into any light
-    @PUT("api/{username}/lights/{light}/state")
-    fun putOnAttribute(@Path("username") username: String, @Path("light") light: Int) :
-            Deferred<Pair<String, Boolean>>
+    //POST call to obtain username
+    @POST("api")
+    fun postDeviceTypeAsync(@Body post: String) : Deferred<List<BridgeProperty>>
 
     //GET call to obtain the light map
     @GET("api/{username}/lights")
     fun getAllLightsAsync(@Path("username") username : String) :
             Deferred<Map<String, LightProperty>>
 
-    //POST call to obtain username
-    @POST("api")
-    fun postDeviceTypeAsync(@Body post: String) : Deferred<List<BridgeProperty>>
+    //Boiler plate for function to test on state and determine if switch should turn light on/off
+    /*
+    @GET("api/{username}/lights/{light}")
+    fun getOnState(@Path("username") username: String,
+                   @Path("light") light: Int) : Deferred<Map<String, LightProperty>>
+     */
+
+    //PUT call to insert the value of the "on" attribute into any light
+    @PUT("api/{username}/lights/{light}/state")
+    fun putOnAttribute(@Path("username") username: String,
+                       @Path("light") light: Int,
+                       @Body body: LightData) : Call<String>
+
 }
 
 //API object inheriting the ApiService
 object HueApi {
+    var username = ""
+
     val retrofitService : HueApiService by lazy {
         //Create intended API service
         retrofit.create(HueApiService::class.java)
