@@ -5,3 +5,4 @@ Todo
   - Add test classes
   - Add bottom navigation
   - Start the other main fragments
+  -- Clean up github commit history
