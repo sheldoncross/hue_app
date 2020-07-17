@@ -5,7 +5,6 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.Deferred
 import retrofit2.Call
-import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
@@ -44,18 +43,23 @@ interface HueApiService {
     fun getAllLightsAsync(@Path("username") username : String) :
             Deferred<Map<String, LightProperty>>
 
-    //Boiler plate for function to test on state and determine if switch should turn light on/off
-    /*
+    //GET call to test on state and determine if switch should turn light on/off
     @GET("api/{username}/lights/{light}")
-    fun getOnState(@Path("username") username: String,
-                   @Path("light") light: Int) : Deferred<Map<String, LightProperty>>
-     */
+    fun getOnStateAsync(@Path("username") username: String,
+                        @Path("light") light: Int) : Deferred<OnStateProperty>
+
 
     //PUT call to insert the value of the "on" attribute into any light
     @PUT("api/{username}/lights/{light}/state")
     fun putOnAttribute(@Path("username") username: String,
                        @Path("light") light: Int,
-                       @Body body: LightData) : Call<String>
+                       @Body body: LightDataProperty) : Call<String>
+
+    //PUT call to insert the value of the "on" attribute into any light
+    @PUT("api/{username}/lights/{light}/state")
+    fun putOffAttribute(@Path("username") username: String,
+                       @Path("light") light: Int,
+                       @Body body: LightDataProperty) : Call<String>
 
 }
 

@@ -5,8 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.example.android.hue.database.light.Light
 import com.example.android.hue.database.user.User
-import com.example.android.hue.network.HueApi
-import com.example.android.hue.network.LightData
+import com.example.android.hue.network.*
 import kotlinx.coroutines.*
 import retrofit2.await
 import timber.log.Timber
@@ -26,18 +25,57 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val coroutineScope =
         CoroutineScope(viewModelJob + Dispatchers.Main )
 
-    fun switchLightOn(lightNumber: Int) {
+    fun testOnState(lightNumber: Int) {
+        var stateVal : Boolean
+        var lightState : OnStateProperty
+        coroutineScope.launch {
+            val onTestCall = HueApi.retrofitService.getOnStateAsync(
+                user.value!!.username,
+                lightNumber)
+
+            Timber.d("Making GET call to test on state for light %s", lightNumber)
+
+            lightState = onTestCall.await()
+
+            Timber.d("Return from call: %s", lightState.state!!.on.toString())
+
+            stateVal = lightState.state!!.on
+
+            if(stateVal){
+                switchLightOff(lightNumber)
+            }else{
+                switchLightOn(lightNumber)
+            }
+        }
+    }
+
+    private fun switchLightOn(lightNumber: Int) {
         coroutineScope.launch {
             val switchCall = HueApi.retrofitService.putOnAttribute(
                 user.value!!.username,
                 lightNumber,
-                LightData(true))
+                LightDataProperty(true))
 
             Timber.d("Making Light switch on call for light %s", lightNumber)
 
             switchCall.await()
 
-            Timber.d("Light switch call made")
+            Timber.d("Light switch ON call made")
+        }
+    }
+
+    private fun switchLightOff(lightNumber: Int) {
+        coroutineScope.launch {
+            val switchCall = HueApi.retrofitService.putOffAttribute(
+                user.value!!.username,
+                lightNumber,
+                LightDataProperty(false))
+
+            Timber.d("Making Light switch OFF call for light %s", lightNumber)
+
+            switchCall.await()
+
+            Timber.d("Light switch OFF call made")
         }
     }
 

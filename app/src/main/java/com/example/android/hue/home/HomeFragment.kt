@@ -58,7 +58,7 @@ class HomeFragment : Fragment() {
             override var idNumber = 0
 
             override fun onButtonClick() {
-                homeViewModel.switchLightOn(idNumber)
+                homeViewModel.testOnState(idNumber)
             }
         })
 

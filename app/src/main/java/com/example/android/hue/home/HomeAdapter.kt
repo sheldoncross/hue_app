@@ -8,6 +8,7 @@ import com.example.android.hue.R
 import com.example.android.hue.CardItemViewHolder
 import com.example.android.hue.database.light.Light
 import kotlinx.android.synthetic.main.card_item_view.view.*
+import timber.log.Timber
 
 class HomeAdapter(var lightSwitchListener: LightSwitchListener):
     RecyclerView.Adapter<CardItemViewHolder>() {
@@ -22,13 +23,19 @@ class HomeAdapter(var lightSwitchListener: LightSwitchListener):
     override fun onBindViewHolder(holder: CardItemViewHolder, position: Int) {
         //Change current item to the next light in the data list
         val item = data[position]
+
         //Set the text for the card view to equal the current lights name
         holder.cardView.card_view_text.text = item.name
-        holder.cardView.light_switch.setOnCheckedChangeListener { _, isChecked ->
-            if(isChecked){
-                lightSwitchListener.idNumber = item.idNumber
-                lightSwitchListener.onButtonClick()
-            }
+
+        Timber.d(item.on.toString())
+
+        if(item.on){
+            holder.cardView.light_switch.isChecked = true
+        }
+
+        holder.cardView.light_switch.setOnCheckedChangeListener { _, _ ->
+            lightSwitchListener.idNumber = item.idNumber
+            lightSwitchListener.onButtonClick()
         }
     }
 
@@ -36,8 +43,8 @@ class HomeAdapter(var lightSwitchListener: LightSwitchListener):
         //Get the layout inflater from the parent
         val layoutInflater = LayoutInflater.from(parent.context)
         //Inflate the card item view layout as a card view
-        val view = layoutInflater
-            .inflate(R.layout.card_item_view, parent, false) as CardView
+        val view =
+            layoutInflater.inflate(R.layout.card_item_view, parent, false) as CardView
         return CardItemViewHolder(view)
     }
 }

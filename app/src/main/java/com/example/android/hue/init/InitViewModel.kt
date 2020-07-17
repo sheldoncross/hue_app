@@ -56,20 +56,12 @@ class InitViewModel(private val userDatabaseDao: UserDatabaseDao,
 
             //Start initial request for username api key if the default username is empty
             @Suppress("SENSELESS_COMPARISON")
-            when {
-                //When the user value is null get the default user value
-                _user.value == null -> {
+            when (_user.value) {
+                null -> {
                     postDeviceType()
                 }
-                //If username is not found immediately retrieve all lights using username API key
-                _lightList.value!!.isEmpty() -> {
-                    getHueProperties(_user.value!!.username)
-                }
                 else -> {
-                    //Navigate to the home fragment if all values are found
-                    Timber.d(_user.value.toString())
-                    Timber.d(_lightList.value.toString())
-                    navigateToHome()
+                    getHueProperties(_user.value!!.username)
                 }
             }
         }
@@ -90,17 +82,20 @@ class InitViewModel(private val userDatabaseDao: UserDatabaseDao,
                 /*Continue making calls for a username from the bridge while the username value is
                  invalid */
                 var response = "null"
+
                 while (response == "null"){
 
                     //POST call containing the apps parameter values
                     val postDeviceTypeDeferred =
                         HueApi.retrofitService.postDeviceTypeAsync(paramObject.toString())
+
                     //Obtain the username from the POST call
                     val listData = postDeviceTypeDeferred.await()
 
                     //Response is the first values success variable containing the default username
                     response = listData[0].success?.username.toString()
                 }
+
                 Timber.d(String.format("Username is: $response"))
 
                 //Create new user containing the API key
@@ -111,11 +106,13 @@ class InitViewModel(private val userDatabaseDao: UserDatabaseDao,
 
                 //Insert new username API key into room database
                 userDatabaseDao.insert(newUser)
+
                 //Get all light values for the light map/list using the newly created user
                 getHueProperties(_user.value!!.username)
             }catch (e : Exception){
                 //If there's an exception repeat the process init process
                 Timber.d("Failure: %s", e.message)
+
                 postDeviceType()
             }
             Timber.d("Saved username: %s", _user.value)
@@ -142,6 +139,9 @@ class InitViewModel(private val userDatabaseDao: UserDatabaseDao,
 
                 Timber.d(listResult.values.toString())
 
+
+                lightDatabaseDao.clear()
+
                 var i = 1
                 //Insert the obtained light map results into the device database
                 for(lightProperty: LightProperty in listResult.values){
@@ -160,9 +160,9 @@ class InitViewModel(private val userDatabaseDao: UserDatabaseDao,
                 //View models light list variable equals the values stored in the database
                 _lightList.value = lightDatabaseDao.getAllLights()
 
-                Timber.d(String.format("Light objects: " + _lightList.value.toString()))
+                Timber.d("username: %s", user.value.toString())
+                Timber.d("Light objects: %s", _lightList.value.toString())
 
-                //Navigate to the home fragment
                 navigateToHome()
             }catch (e : java.lang.Exception){
                 Timber.d(String.format("Failure: " + e.message))

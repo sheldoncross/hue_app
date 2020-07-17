@@ -11,13 +11,13 @@ interface LightDatabaseDao {
     suspend fun insert(light: Light)
 
     @Update
-    fun update(light: Light)
+    suspend fun update(light: Light)
 
     @Query("SELECT * from light_map_table WHERE name = :name")
     fun get(name: String): Light
 
     @Query("DELETE FROM light_map_table")
-    fun clear()
+    suspend fun clear()
 
     @Query("SELECT * FROM light_map_table ORDER BY name ASC")
     suspend fun getAllLights(): List<Light>
